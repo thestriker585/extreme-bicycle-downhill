@@ -1,0 +1,1458 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#17191c">
+<title>Extreme Bicycle Downhill | v0.1 BETA</title>
+
+<style>
+:root {
+    --bg: #17191c;
+    --panel: #202327;
+    --panel-light: #292d32;
+    --panel-hover: #32373d;
+    --border: #393e44;
+    --text: #e8eaec;
+    --muted: #858c94;
+    --accent: #aeb5bc;
+    --gradient: linear-gradient(135deg, #626970, #34393f);
+    --gradient-hover: linear-gradient(135deg, #7d858d, #444a51);
+    --green: #a0b8a8;
+    --shadow: 0 12px 35px rgba(0,0,0,.17);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(ellipse at 50% -20%, #343940 0%, transparent 50%),
+        var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", Arial, sans-serif;
+    overflow-x: hidden;
+}
+
+button, input {
+    font: inherit;
+}
+
+button {
+    color: inherit;
+}
+
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid #bfc6cd;
+    outline-offset: 3px;
+}
+
+/* GENERAL */
+
+.app {
+    width: min(1380px, 94%);
+    margin: 0 auto;
+    padding-bottom: 60px;
+}
+
+.topbar {
+    height: 82px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,.09);
+    margin-bottom: 38px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    cursor: pointer;
+    background: none;
+    border: 0;
+    text-align: left;
+}
+
+.brand-icon {
+    width: 42px;
+    height: 42px;
+    background: var(--gradient);
+    display: grid;
+    place-items: center;
+    font-weight: 900;
+    font-size: 20px;
+    box-shadow: 0 5px 16px rgba(0,0,0,.25);
+}
+
+.brand-name {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.brand-version {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 2px;
+    margin-top: 4px;
+}
+
+.beta-tag {
+    border: 1px solid #687078;
+    padding: 7px 12px;
+    color: #c4c9ce;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: rgba(255,255,255,.025);
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+    animation: pageEnter .42s cubic-bezier(.2,.7,.25,1) both;
+}
+
+@keyframes pageEnter {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.page-heading {
+    margin-bottom: 29px;
+}
+
+.page-heading h1 {
+    font-size: clamp(23px, 4vw, 31px);
+    font-weight: 750;
+    letter-spacing: 1px;
+}
+
+.page-heading p {
+    color: var(--muted);
+    margin-top: 9px;
+    font-size: 13px;
+}
+
+.back-button {
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 11px 16px;
+    cursor: pointer;
+    color: #aeb5bc;
+    font-size: 11px;
+    letter-spacing: 1px;
+    transition: .2s ease;
+    margin-bottom: 25px;
+}
+
+.back-button:hover {
+    background: var(--panel-light);
+    border-color: #737b83;
+    color: white;
+}
+
+.panel {
+    background: linear-gradient(145deg, #25292e, #1e2125);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.section-label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+/* MAIN MENU */
+
+.home-hero {
+    padding: 27px 0 34px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    margin-bottom: 30px;
+}
+
+.home-hero .overline {
+    font-size: 10px;
+    color: #929aa2;
+    letter-spacing: 4px;
+    margin-bottom: 13px;
+}
+
+.home-hero h1 {
+    font-size: clamp(30px, 6vw, 55px);
+    line-height: 1.08;
+    letter-spacing: -1.5px;
+    font-weight: 850;
+}
+
+.home-hero h1 span {
+    color: #9199a1;
+}
+
+.home-hero p {
+    margin-top: 15px;
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: .5px;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 13px;
+}
+
+.menu-button {
+    position: relative;
+    min-height: 104px;
+    text-align: left;
+    padding: 21px 24px;
+    border: 1px solid #555d65;
+    background: var(--gradient);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden;
+    transition: transform .25s ease, filter .25s ease, border-color .25s ease;
+}
+
+.menu-button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.09), transparent 70%);
+    transform: translateX(-120%);
+    transition: transform .65s ease;
+}
+
+.menu-button:hover::before {
+    transform: translateX(120%);
+}
+
+.menu-button:hover {
+    background: var(--gradient-hover);
+    border-color: #9aa2aa;
+    transform: translateY(-3px);
+}
+
+.menu-button:active {
+    transform: translateY(0) scale(.985);
+}
+
+.menu-button strong {
+    display: block;
+    font-size: 13px;
+    letter-spacing: 1.3px;
+    font-weight: 750;
+    position: relative;
+}
+
+.menu-button small {
+    display: block;
+    margin-top: 8px;
+    font-size: 10px;
+    color: #c0c6cc;
+    letter-spacing: .5px;
+    position: relative;
+}
+
+.menu-arrow {
+    font-size: 25px;
+    color: #d0d5da;
+    position: relative;
+    transition: transform .2s;
+}
+
+.menu-button:hover .menu-arrow {
+    transform: translateX(5px);
+}
+
+.menu-button.primary {
+    grid-column: span 2;
+    min-height: 125px;
+    background: linear-gradient(115deg, #68727a, #383e45 72%);
+    border-color: #7b858e;
+}
+
+.menu-button.primary strong {
+    font-size: 17px;
+}
+
+.home-footer {
+    margin-top: 33px;
+    display: flex;
+    justify-content: space-between;
+    color: #626a72;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+}
+
+/* LEADERBOARDS */
+
+.leaderboards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 15px;
+}
+
+.leaderboard-card {
+    min-width: 0;
+    padding: 19px 15px;
+}
+
+.leaderboard-title {
+    font-size: 13px;
+    font-weight: 750;
+    letter-spacing: .6px;
+    padding-bottom: 16px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.table-head,
+.leader-row {
+    display: grid;
+    grid-template-columns: 35px 1fr 55px;
+    gap: 5px;
+    align-items: center;
+}
+
+.table-head {
+    color: #777f87;
+    font-size: 9px;
+    letter-spacing: .8px;
+    padding-bottom: 10px;
+}
+
+.leader-row {
+    min-height: 39px;
+    border-bottom: 1px solid rgba(255,255,255,.045);
+    font-size: 11px;
+    color: #9ca3aa;
+}
+
+.leader-row .rank {
+    color: #69717a;
+    font-variant-numeric: tabular-nums;
+}
+
+.leader-row .score {
+    text-align: right;
+}
+
+.leader-row.me {
+    margin-top: 9px;
+    padding-top: 8px;
+    border-top: 1px solid #747d86;
+    border-bottom: 0;
+    color: #e1e5e8;
+    font-weight: 750;
+}
+
+.leader-row.me .rank {
+    color: #d0d6db;
+}
+
+.leaderboard-note {
+    margin-top: 14px;
+    color: #606971;
+    font-size: 9px;
+    letter-spacing: .7px;
+}
+
+/* SETTINGS */
+
+.settings-container {
+    display: grid;
+    gap: 12px;
+}
+
+.setting-card {
+    padding: 19px 21px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    min-height: 85px;
+}
+
+.setting-info {
+    min-width: 0;
+}
+
+.setting-name {
+    font-weight: 700;
+    font-size: 12px;
+    color: #d8dce0;
+    margin-bottom: 7px;
+}
+
+.setting-description {
+    font-size: 11px;
+    color: #858d95;
+}
+
+.fake-control {
+    flex-shrink: 0;
+    height: 28px;
+    width: 46px;
+    border: 1px solid #555d65;
+    background: #171a1d;
+    position: relative;
+}
+
+.fake-control::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, #a2a9af, #656d75);
+}
+
+.slider-card {
+    display: block;
+}
+
+.range-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+}
+
+.range-track {
+    width: 100%;
+    margin-top: 20px;
+    accent-color: #aeb6bd;
+    cursor: pointer;
+}
+
+/* PROFILES */
+
+.tabs {
+    display: flex;
+    gap: 5px;
+    padding: 5px;
+    background: #181b1e;
+    border: 1px solid var(--border);
+    width: fit-content;
+    margin-bottom: 22px;
+}
+
+.tab-button {
+    border: 0;
+    background: transparent;
+    color: #818992;
+    padding: 12px 30px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: 1.5px;
+    transition: .2s;
+}
+
+.tab-button.active {
+    color: white;
+    background: var(--gradient);
+}
+
+.tab-panel {
+    display: none;
+    animation: pageEnter .3s ease both;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+.stats-panel {
+    padding: 25px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 12px;
+}
+
+.stat-box {
+    background: #191c20;
+    border: 1px solid #353b42;
+    padding: 20px 17px;
+    min-height: 94px;
+}
+
+.stat-box .stat-name {
+    color: #879099;
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+.stat-box .stat-value {
+    margin-top: 13px;
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.profile-global-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 19px;
+}
+
+.search-box {
+    width: min(340px,100%);
+    height: 43px;
+    background: #1b1e22;
+    color: #929ba3;
+    border: 1px solid var(--border);
+    padding: 0 14px;
+    font-size: 11px;
+}
+
+.search-box::placeholder {
+    color: #707982;
+}
+
+.global-list {
+    display: grid;
+    gap: 8px;
+}
+
+.global-player {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+    padding: 15px 19px;
+    min-height: 66px;
+}
+
+.global-number {
+    color: #6e7780;
+    font-size: 12px;
+    width: 22px;
+}
+
+.global-player-name {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.global-player-info {
+    font-size: 10px;
+    margin-top: 5px;
+    color: #858d95;
+}
+
+.global-player-status {
+    margin-left: auto;
+    font-size: 11px;
+    color: #858d95;
+}
+
+/* GAME MAIN */
+
+.currency-bar {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-bottom: 30px;
+}
+
+.currency-box {
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, #282d32, #1b1e21);
+    padding: 12px 17px;
+    min-width: 140px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.currency-icon {
+    width: 29px;
+    height: 29px;
+    background: linear-gradient(135deg,#747d85,#41484f);
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.currency-label {
+    font-size: 9px;
+    color: #818a93;
+    letter-spacing: 1px;
+}
+
+.currency-value {
+    font-size: 13px;
+    font-weight: 800;
+    margin-top: 3px;
+}
+
+.game-tabs {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 9px;
+    margin-bottom: 17px;
+}
+
+.game-tab {
+    height: 63px;
+    border: 1px solid #424950;
+    background: linear-gradient(135deg,#30353a,#23272b);
+    color: #9ba3aa;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: .22s ease;
+}
+
+.game-tab:hover {
+    background: var(--gradient-hover);
+    color: white;
+}
+
+.game-tab.active {
+    color: #fff;
+    background: linear-gradient(135deg,#69737b,#424951);
+    border-color: #89939b;
+    box-shadow: inset 0 -2px #c2c8ce;
+}
+
+.game-content {
+    display: none;
+    min-height: 365px;
+    padding: 28px;
+    animation: pageEnter .3s ease both;
+}
+
+.game-content.active {
+    display: block;
+}
+
+.game-empty {
+    min-height: 305px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: 1px dashed #424950;
+    background: rgba(0,0,0,.09);
+}
+
+.empty-symbol {
+    width: 57px;
+    height: 57px;
+    border: 1px solid #555e67;
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+    color: #a0a8b0;
+    margin-bottom: 19px;
+}
+
+.empty-title {
+    font-size: 13px;
+    font-weight: 750;
+    letter-spacing: 1px;
+}
+
+.empty-description {
+    color: #78818a;
+    font-size: 11px;
+    margin-top: 9px;
+}
+
+/* ACCOUNT */
+
+.account-panel {
+    max-width: 600px;
+    padding: 35px;
+}
+
+.account-mark {
+    width: 65px;
+    height: 65px;
+    background: var(--gradient);
+    display: grid;
+    place-items: center;
+    font-size: 27px;
+    margin-bottom: 24px;
+}
+
+.account-panel h2 {
+    font-size: 17px;
+    margin-bottom: 10px;
+}
+
+.account-panel p {
+    color: #818a93;
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+/* FOOTER */
+
+.page-footer {
+    margin-top: 32px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255,255,255,.07);
+    color: #59616a;
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+}
+
+@media(max-width: 850px) {
+    .leaderboards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .leaderboard-card {
+        padding: 19px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2,1fr);
+    }
+}
+
+@media(max-width: 550px) {
+    .app {
+        width: 92%;
+    }
+
+    .topbar {
+        height: 72px;
+        margin-bottom: 25px;
+    }
+
+    .brand-name {
+        font-size: 11px;
+        letter-spacing: 1px;
+    }
+
+    .brand-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .beta-tag {
+        font-size: 8px;
+        padding: 6px 7px;
+    }
+
+    .home-hero h1 {
+        font-size: 33px;
+    }
+
+    .menu-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .menu-button.primary {
+        grid-column: span 1;
+    }
+
+    .menu-button {
+        min-height: 83px;
+    }
+
+    .home-footer,
+    .page-footer {
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .stats-panel {
+        padding: 13px;
+    }
+
+    .stat-box {
+        padding: 15px 12px;
+    }
+
+    .stat-box .stat-value {
+        font-size: 16px;
+    }
+
+    .tab-button {
+        padding: 11px 19px;
+    }
+
+    .currency-box {
+        min-width: 0;
+        padding: 10px;
+        flex: 1;
+    }
+
+    .game-tab {
+        font-size: 9px;
+        letter-spacing: .5px;
+    }
+
+    .setting-card {
+        padding: 16px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- HEADER -->
+    <header class="topbar">
+        <button class="brand" onclick="showPage('home')" aria-label="Volver al menú">
+            <div class="brand-icon">E</div>
+            <div>
+                <div class="brand-name">EXTREME BICYCLE DOWNHILL</div>
+                <div class="brand-version">DEVELOPMENT PROJECT</div>
+            </div>
+        </button>
+
+        <div class="beta-tag">V0.1 BETA</div>
+    </header>
+
+
+    <!-- ================================= -->
+    <!-- MENU PRINCIPAL                    -->
+    <!-- ================================= -->
+
+    <main id="home" class="page active">
+
+        <section class="home-hero">
+            <div class="overline">MOUNTAIN BIKING EXPERIENCE</div>
+            <h1>EXTREME BICYCLE<br><span>DOWNHILL</span></h1>
+            <p>DESCENSO · VELOCIDAD · CONTROL</p>
+        </section>
+
+        <div class="section-label">MENÚ PRINCIPAL</div>
+
+        <section class="menu-grid">
+
+            <button class="menu-button primary" onclick="showPage('game')">
+                <div>
+                    <strong>JUEGO PRINCIPAL</strong>
+                    <small>[Placeholder]</small>
+                </div>
+                <span class="menu-arrow">›</span>
+            </button>
+
+            <button class="menu-button" onclick="showPage('account')">
+                <div>
+                    <strong>CUENTA</strong>
+                    <small>[Placeholder]</small>
+                </div>
+                <span class="menu-arrow">›</span>
+            </button>
+
+            <button class="menu-button" onclick="showPage('profiles')">
+                <div>
+                    <strong>PERFILES</strong>
+                    <small>[Placeholder]</small>
+                </div>
+                <span class="menu-arrow">›</span>
+            </button>
+
+            <button class="menu-button" onclick="showPage('leaderboards')">
+                <div>
+                    <strong>TABLAS DE CLASIFICACIÓN</strong>
+                    <small>[Placeholder]</small>
+                </div>
+                <span class="menu-arrow">›</span>
+            </button>
+
+            <button class="menu-button" onclick="showPage('settings')">
+                <div>
+                    <strong>CONFIGURACIÓN</strong>
+                    <small>[Placeholder]</small>
+                </div>
+                <span class="menu-arrow">›</span>
+            </button>
+
+        </section>
+
+        <footer class="home-footer">
+            <span>EXTREME BICYCLE DOWNHILL</span>
+            <span>BUILD 0.1.0 BETA</span>
+        </footer>
+
+    </main>
+
+
+    <!-- ================================= -->
+    <!-- CUENTA                            -->
+    <!-- ================================= -->
+
+    <main id="account" class="page">
+
+        <button class="back-button" onclick="showPage('home')">← MENÚ PRINCIPAL</button>
+
+        <div class="page-heading">
+            <h1>CUENTA</h1>
+            <p>[Placeholder]</p>
+        </div>
+
+        <div class="panel account-panel">
+            <div class="account-mark">E</div>
+            <h2>[Placeholder]</h2>
+            <p>[Placeholder]</p>
+        </div>
+
+    </main>
+
+
+    <!-- ================================= -->
+    <!-- TABLAS DE CLASIFICACIÓN           -->
+    <!-- ================================= -->
+
+    <main id="leaderboards" class="page">
+
+        <button class="back-button" onclick="showPage('home')">← MENÚ PRINCIPAL</button>
+
+        <div class="page-heading">
+            <h1>TABLAS DE CLASIFICACIÓN</h1>
+            <p>Clasificaciones globales · [Placeholder]</p>
+        </div>
+
+        <section class="leaderboards-grid" id="leaderboardsContainer">
+
+        </section>
+
+    </main>
+
+
+    <!-- ================================= -->
+    <!-- CONFIGURACIÓN                     -->
+    <!-- ================================= -->
+
+    <main id="settings" class="page">
+
+        <button class="back-button" onclick="showPage('home')">← MENÚ PRINCIPAL</button>
+
+        <div class="page-heading">
+            <h1>CONFIGURACIÓN</h1>
+            <p>Personaliza tu experiencia · [Placeholder]</p>
+        </div>
+
+        <div class="section-label">GENERAL</div>
+
+        <section class="settings-container">
+
+            <div class="panel setting-card slider-card">
+                <div class="range-top">
+                    <div>
+                        <div class="setting-name">[Placeholder]</div>
+                        <div class="setting-description">[Placeholder]</div>
+                    </div>
+                    <span class="fake-control"></span>
+                </div>
+                <input class="range-track" type="range" min="0" max="100" value="50" aria-label="Placeholder">
+            </div>
+
+            <div class="panel setting-card">
+                <div class="setting-info">
+                    <div class="setting-name">[Placeholder]</div>
+                    <div class="setting-description">[Placeholder]</div>
+                </div>
+                <span class="fake-control"></span>
+            </div>
+
+            <div class="panel setting-card">
+                <div class="setting-info">
+                    <div class="setting-name">[Placeholder]</div>
+                    <div class="setting-description">[Placeholder]</div>
+                </div>
+                <span class="fake-control"></span>
+            </div>
+
+            <div class="panel setting-card">
+                <div class="setting-info">
+                    <div class="setting-name">[Placeholder]</div>
+                    <div class="setting-description">[Placeholder]</div>
+                </div>
+                <span class="fake-control"></span>
+            </div>
+
+            <div class="panel setting-card">
+                <div class="setting-info">
+                    <div class="setting-name">[Placeholder]</div>
+                    <div class="setting-description">[Placeholder]</div>
+                </div>
+                <span class="fake-control"></span>
+            </div>
+
+            <div class="panel setting-card">
+                <div class="setting-info">
+                    <div class="setting-name">[Placeholder]</div>
+                    <div class="setting-description">[Placeholder]</div>
+                </div>
+                <span class="fake-control"></span>
+            </div>
+
+            <div class="panel setting-card">
+                <div class="setting-info">
+                    <div class="setting-name">[Placeholder]</div>
+                    <div class="setting-description">[Placeholder]</div>
+                </div>
+                <span class="fake-control"></span>
+            </div>
+
+            <div class="panel setting-card">
+                <div class="setting-info">
+                    <div class="setting-name">[Placeholder]</div>
+                    <div class="setting-description">[Placeholder]</div>
+                </div>
+                <span class="fake-control"></span>
+            </div>
+
+            <div class="panel setting-card">
+                <div class="setting-info">
+                    <div class="setting-name">[Placeholder]</div>
+                    <div class="setting-description">[Placeholder]</div>
+                </div>
+                <span class="fake-control"></span>
+            </div>
+
+            <div class="panel setting-card">
+                <div class="setting-info">
+                    <div class="setting-name">[Placeholder]</div>
+                    <div class="setting-description">[Placeholder]</div>
+                </div>
+                <span class="fake-control"></span>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================================= -->
+    <!-- PERFILES                          -->
+    <!-- ================================= -->
+
+    <main id="profiles" class="page">
+
+        <button class="back-button" onclick="showPage('home')">← MENÚ PRINCIPAL</button>
+
+        <div class="page-heading">
+            <h1>PERFILES</h1>
+            <p>Información y estadísticas de jugadores · [Placeholder]</p>
+        </div>
+
+        <nav class="tabs">
+            <button class="tab-button active" data-profile-tab="your-profile">TU</button>
+            <button class="tab-button" data-profile-tab="global-profile">GLOBAL</button>
+        </nav>
+
+
+        <!-- TU PERFIL -->
+
+        <section id="your-profile" class="tab-panel active">
+
+            <div class="section-label">TU PERFIL</div>
+
+            <div class="panel stats-panel">
+
+                <div class="stats-grid">
+
+                    <div class="stat-box">
+                        <div class="stat-name">NOMBRE</div>
+                        <div class="stat-value">N/A</div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-name">ID</div>
+                        <div class="stat-value">N/A</div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-name">METROS TOTALES</div>
+                        <div class="stat-value">N/A</div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-name">MONEDAS TOTALES</div>
+                        <div class="stat-value">N/A</div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-name">TIEMPO DE JUEGO</div>
+                        <div class="stat-value">N/A</div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-name">BICICLETAS</div>
+                        <div class="stat-value">N/A</div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-name">MAPAS</div>
+                        <div class="stat-value">N/A</div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-name">PARTIDAS</div>
+                        <div class="stat-value">N/A</div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-name">RÉCORD PERSONAL</div>
+                        <div class="stat-value">N/A</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- PERFIL GLOBAL -->
+
+        <section id="global-profile" class="tab-panel">
+
+            <div class="profile-global-top">
+
+                <div class="section-label" style="margin:0">
+                    MEJORES JUGADORES
+                </div>
+
+                <input
+                    class="search-box"
+                    type="text"
+                    placeholder="Buscar jugador... [Placeholder]"
+                    disabled
+                    aria-label="Buscar jugador"
+                >
+
+            </div>
+
+            <div class="global-list" id="globalPlayers"></div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================================= -->
+    <!-- JUEGO PRINCIPAL                   -->
+    <!-- ================================= -->
+
+    <main id="game" class="page">
+
+        <button class="back-button" onclick="showPage('home')">← MENÚ PRINCIPAL</button>
+
+        <div class="page-heading">
+            <h1>JUEGO PRINCIPAL</h1>
+            <p>Extreme Bicycle Downhill · [Placeholder]</p>
+        </div>
+
+        <!-- MONEDAS Y GEMAS -->
+
+        <div class="currency-bar">
+
+            <div class="currency-box">
+                <div class="currency-icon">C</div>
+                <div>
+                    <div class="currency-label">MONEDAS</div>
+                    <div class="currency-value">N/A</div>
+                </div>
+            </div>
+
+            <div class="currency-box">
+                <div class="currency-icon">G</div>
+                <div>
+                    <div class="currency-label">GEMAS</div>
+                    <div class="currency-value">N/A</div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- SECCIONES DEL JUEGO -->
+
+        <nav class="game-tabs">
+
+            <button class="game-tab active" data-game-tab="maps">
+                MAPAS
+            </button>
+
+            <button class="game-tab" data-game-tab="bikes">
+                BICICLETAS
+            </button>
+
+            <button class="game-tab" data-game-tab="shop">
+                TIENDA
+            </button>
+
+        </nav>
+
+
+        <!-- MAPAS -->
+
+        <section id="maps" class="panel game-content active">
+
+            <div class="game-empty">
+                <div class="empty-symbol">◇</div>
+                <div class="empty-title">MAPAS</div>
+                <div class="empty-description">[Placeholder]</div>
+            </div>
+
+        </section>
+
+
+        <!-- BICICLETAS -->
+
+        <section id="bikes" class="panel game-content">
+
+            <div class="game-empty">
+                <div class="empty-symbol">⌁</div>
+                <div class="empty-title">BICICLETAS</div>
+                <div class="empty-description">[Placeholder]</div>
+            </div>
+
+        </section>
+
+
+        <!-- TIENDA -->
+
+        <section id="shop" class="panel game-content">
+
+            <div class="game-empty">
+                <div class="empty-symbol">▣</div>
+                <div class="empty-title">TIENDA</div>
+                <div class="empty-description">[Placeholder]</div>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER GENERAL -->
+
+    <footer class="page-footer">
+        <span>EXTREME BICYCLE DOWNHILL</span>
+        <span>V0.1 BETA · 2026</span>
+    </footer>
+
+</div>
+
+
+<script>
+
+/* =================================
+   NAVEGACIÓN PRINCIPAL
+================================= */
+
+function showPage(pageId) {
+
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+    });
+
+    const target = document.getElementById(pageId);
+
+    if (target) {
+        target.classList.remove('active');
+
+        // Reiniciar animación
+        void target.offsetWidth;
+
+        target.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+
+/* =================================
+   TABLAS DE CLASIFICACIÓN
+================================= */
+
+const leaderboardCategories = [
+    'METROS TOTALES',
+    'MONEDAS TOTALES',
+    'TIEMPO DE JUEGO'
+];
+
+const leaderboardsContainer =
+    document.getElementById('leaderboardsContainer');
+
+leaderboardsContainer.innerHTML =
+    leaderboardCategories.map(category => {
+
+        let rows = '';
+
+        for (let i = 1; i <= 10; i++) {
+
+            const rank = String(i).padStart(2, '0');
+
+            rows += `
+                <div class="leader-row">
+                    <span class="rank">${rank}</span>
+                    <span>N/A</span>
+                    <span class="score">N/A</span>
+                </div>
+            `;
+        }
+
+        return `
+            <article class="panel leaderboard-card">
+
+                <div class="leaderboard-title">${category}</div>
+
+                <div class="table-head">
+                    <span>POS.</span>
+                    <span>JUGADOR</span>
+                    <span style="text-align:right">VALOR</span>
+                </div>
+
+                ${rows}
+
+                <div class="leader-row me">
+                    <span class="rank">TU</span>
+                    <span>TU</span>
+                    <span class="score">N/A</span>
+                </div>
+
+                <div class="leaderboard-note">
+                    [PLACEHOLDER]
+                </div>
+
+            </article>
+        `;
+
+    }).join('');
+
+
+/* =================================
+   PERFILES: TOP 10 GLOBAL
+================================= */
+
+const globalPlayers = document.getElementById('globalPlayers');
+
+globalPlayers.innerHTML = Array.from({length: 10}, (_, index) => {
+
+    const rank = String(index + 1).padStart(2, '0');
+
+    return `
+        <div class="panel global-player">
+
+            <span class="global-number">${rank}</span>
+
+            <div>
+                <div class="global-player-name">N/A</div>
+                <div class="global-player-info">[Placeholder]</div>
+            </div>
+
+            <span class="global-player-status">N/A</span>
+
+        </div>
+    `;
+
+}).join('');
+
+
+/* =================================
+   PERFILES: PESTAÑAS
+================================= */
+
+document.querySelectorAll('[data-profile-tab]').forEach(button => {
+
+    button.addEventListener('click', () => {
+
+        const targetId = button.dataset.profileTab;
+
+        document.querySelectorAll('[data-profile-tab]')
+            .forEach(tab => tab.classList.remove('active'));
+
+        document.querySelectorAll('#profiles .tab-panel')
+            .forEach(panel => panel.classList.remove('active'));
+
+        button.classList.add('active');
+
+        const target = document.getElementById(targetId);
+
+        target.classList.remove('active');
+        void target.offsetWidth;
+        target.classList.add('active');
+
+    });
+
+});
+
+
+/* =================================
+   JUEGO PRINCIPAL: PESTAÑAS
+================================= */
+
+document.querySelectorAll('[data-game-tab]').forEach(button => {
+
+    button.addEventListener('click', () => {
+
+        const targetId = button.dataset.gameTab;
+
+        document.querySelectorAll('[data-game-tab]')
+            .forEach(tab => tab.classList.remove('active'));
+
+        document.querySelectorAll('.game-content')
+            .forEach(panel => panel.classList.remove('active'));
+
+        button.classList.add('active');
+
+        const target = document.getElementById(targetId);
+
+        target.classList.remove('active');
+        void target.offsetWidth;
+        target.classList.add('active');
+
+    });
+
+});
+
+</script>
+
+</body>
+</html>
